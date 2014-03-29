@@ -19,6 +19,7 @@ module Networker
     def showNetwork(mask = 24)
       ipaddr = IPAddr.new local_ip
       puts ">>> will scan network: #{ipaddr.mask(mask)}"
+      
     end
   end
 
