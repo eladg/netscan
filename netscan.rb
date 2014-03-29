@@ -12,6 +12,7 @@ def show_help()
   puts "-p    ports [ can be range : -p 22-54 , can be single port : -p 80 , can be combination : -p 80,43,23,125]"
   puts "-type scan type [full,stealth,fin,ack]"
   puts "-b    bannerGrabber status (Should work only for TCP)"
+  puts ""
 end
 
 def usage()
@@ -22,13 +23,12 @@ def usage()
 end
 
 def main(args)
-  # binding.pry
-  command = args.first
-  if command.nil?
+  
+  if args.empty?
     usage()
   end
 
-  if command == "-h"
+  if args[0] == "-h"
     show_help()
   end
 
