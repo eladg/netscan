@@ -19,24 +19,28 @@ module Networker
       end
     end
 
-    def open_syn? (host, port)
+    def open_syn?(host, port)
       false
     end
 
-    def open_syn_ack? (host, port)
+    def open_syn_ack?(host, port)
       false
     end
 
-    def open_ack? (host, port)
+    def open_ack?(host, port)
       false
     end
 
-    def open_udp? (host, port)
+    def open_udp?(host, port)
       false
     end
 
-    def open_fin_scan? (host, port)
+    def open_fin_scan?(host, port)
       false
+    end
+
+    def alive?(host)
+      
     end
 
     def open_port(host, port)

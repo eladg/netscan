@@ -16,10 +16,25 @@ module Networker
       Socket.do_not_reverse_lookup = orig
     end
 
-    def showNetwork(mask = 24)
-      ipaddr = IPAddr.new local_ip
-      puts ">>> will scan network: #{ipaddr.mask(mask)}"
+    def scan_ip(ip)
+      scanner = Networker::PortScanner.new
+      scanner.alive? ip
+    end
+
+    def showNetwork(ip, mask = 24)
+      ipaddr = IPAddr.new ip
+      puts ">>> will scan network: #{ipaddr.mask(mask)}/#{mask} "
       
+      network = ipaddr.mask(mask)
+      network.to_range.each do |ip|
+        if scan_ip(ip)
+          puts ">>> #{ip} does not seems to be alive"
+        else
+          puts ">>> #{ip} seems to be alive!"
+        end
+      end
+
+
     end
   end
 

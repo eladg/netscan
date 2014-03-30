@@ -58,6 +58,8 @@ def main(args)
   end
 
 
+  puts options
+
 end
 
 
