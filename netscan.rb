@@ -1,19 +1,19 @@
-#!/home/user/.rvm/rubies/ruby-2.1.0/bin/ruby
+#!/usr/bin/env ruby
 
 require 'pry'
 require 'optparse'
 
   
-  options = {}
-  OptionParser.new do |opts|
-    opts.on('-i', '--ip IP', String, 'target ip address') do |ip|
+options = {}
+OptionParser.new do |opts|
+  opts.on('-i', '--ip IP', String, 'target ip address') do |ip|
     options[:ip] = ip
   end
-  
-  opts.on('-t','--interval',String,'time interval between each scan in milliseconds') do |interval|
+
+  opts.on('-t','--interval',Integer,'time interval between each scan in milliseconds') do |interval|
     options[:interval] = interval
   end
-  
+
   opts.on('-pt','--protocol PROTOCOL',String,'protocol type [UDP/TCP/ICMP]') do |protocol|
     options[:protocol] = protocol
   end
@@ -28,6 +28,11 @@ require 'optparse'
   opts.on('-type','--TYPE',String,'Scan type [full,stealth,fin,syn]') do |type|
     options[:type] = type
   end
+
+  opts.on('-k',nil, String, 'bannerGrabber status (Should work only for TCP)') do |ba|
+    options[:ba] = ba
+  end
+
   opts.on('-b','--bannerGrabber',String,'bannerGrabber status (Should work only for TCP)') do |bannerGrabber|
     options[:bannerGrabber] = bannerGrabber
   end
@@ -39,12 +44,18 @@ require 'optparse'
 end.parse!
 
 def one_of?(options, *args)
-if (options.keys & args).length != 1
-  puts "Must specify one of #{args}. Try `netscan -h` for help"
-  exit
+  if (options.keys & args).length != 1
+    puts "Must specify one of #{args}. Try `netscan -h` for help"
+    exit
+  end
 end
 
-#one_of?(options, :interface, :range, :cache)
-#one_of?(options, :ping, :port, :nslookup)
+binding.pry
+if options[:bannerGrabber]
+  host = options[:bannerGrabber]
+  puts host
 
-netscan = NetworkScanner.new
+end
+
+
+
