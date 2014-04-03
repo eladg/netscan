@@ -1,40 +1,26 @@
 #!/usr/bin/env ruby
 
-require 'pry'
 require 'optparse'
-
+require "./BannerGrabber"
+require "./NetworkScanner"
+require "./PortScanner"
   
 options = {}
 OptionParser.new do |opts|
-  opts.on('-i', '--ip IP', String, 'target ip address') do |ip|
+  opts.on('-i', '--ip Host', String, 'target ip address') do |ip|
     options[:ip] = ip
   end
 
-  opts.on('-t','--interval',Integer,'time interval between each scan in milliseconds') do |interval|
-    options[:interval] = interval
+  opts.on('-p','--port',Integer,'Port scan on host') do |port|
+    options[:port] = true
   end
 
-  opts.on('-pt','--protocol PROTOCOL',String,'protocol type [UDP/TCP/ICMP]') do |protocol|
-    options[:protocol] = protocol
+  opts.on('-b','--bannerGrabber',String,'BannerGrabber status (works only for TCP)') do |bannerGrabber|
+    options[:bannerGrabber] = true
   end
 
-  opts.on('-p','--port PORT',Integer,'Port to scan for') do |port|
-    options[:port] = port
-  end
-  opts.on('-r','--range RANGE',String,'Specify a range to scan(192.168.1.100-192.168.1.200)') do |range|
-    options[:range] = range
-  end
-
-  opts.on('-type','--TYPE',String,'Scan type [full,stealth,fin,syn]') do |type|
-    options[:type] = type
-  end
-
-  opts.on('-k',nil, String, 'bannerGrabber status (Should work only for TCP)') do |ba|
-    options[:ba] = ba
-  end
-
-  opts.on('-b','--bannerGrabber',String,'bannerGrabber status (Should work only for TCP)') do |bannerGrabber|
-    options[:bannerGrabber] = bannerGrabber
+  opts.on('-n','--networkMapper Interface',String,'Mapping the entire network using ICMP') do |interface|
+    options[:network] = interface
   end
 
   opts.on_tail('-h', '--help', 'Show help message') do
@@ -50,12 +36,22 @@ def one_of?(options, *args)
   end
 end
 
-binding.pry
-if options[:bannerGrabber]
-  host = options[:bannerGrabber]
-  puts host
+#one_of?(options, :ip)
 
+if options[:bannerGrabber]
+  bg = BannerGrabber.new  
+  host = options[:ip]
+  puts bg.analyze_web(host)
 end
 
+if options[:network]
+  networkMapper = NetworkScanner.new
+  networkMapper.getInterfaceIps(options[:network])
+  networkMapper.pinger
+end
 
-
+if options[:port]
+  one_of?(options, :ip)
+  ps = PortScanner.new(options[:ip])
+  ps.scan_host
+end
