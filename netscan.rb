@@ -19,7 +19,7 @@ OptionParser.new do |opts|
     options[:network] = interface
   end
 
-  opts.on('-p','--Port',String,'Start port scanning tool') do |port|
+  opts.on('-p','--Port',String,'Start port scanning tool (1-1024)') do |port|
     options[:port] = true
   end
 
