@@ -10,9 +10,10 @@ class PortScanner
   end
 
   def port_range()
-    (50..60)
+    (1..1024)
   end
 
+  #tries to connect to the host on given port using TCP socket.
   def open_tcp? (port)
     sock = Socket.new(:INET, :STREAM)
     raw = Socket.sockaddr_in(port, @host)
@@ -28,10 +29,12 @@ class PortScanner
       return false
     end
   end
-
+  
+  #tries to connect to the host on given port using UDP socket.
+  #it sends a 60 charecter long string to the host and waits for the reply
   def open_udp?(port)
     uSocket = UDPSocket.new
-    uSocket.send("daaslkgjlaskjglkasjglaskjglasjasgasg", 0, @host, port)
+    uSocket.send("daaslkgjlaskjglkasjglaskjglasjasgasgdaaslkgjlaskjglkasjglask", 0, @host, port)
     begin
       
       Timeout::timeout(@timeout) do
@@ -49,6 +52,8 @@ class PortScanner
     end
   end
 
+  #goes over each port in port_range() and look for open ports
+  #returns the entire open ports array
   def scan_host(type)
     @open_ports = []
     for port in port_range()

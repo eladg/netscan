@@ -11,12 +11,14 @@ module Enumerable
   end
 end
 
+# this class is responsible for scanning the entire network interface using ping command.
 class NetworkScanner
   
   def initialize(timeout = 0.5)
     @timeout = timeout
   end
 
+  #recives an interface and parse the entire network ip addresses into an array.
   def get_network_by_interface(interface)
 
     ifconfig = `ifconfig`.split("\n\n").index_by{|x| x[/\w+/,0]}
@@ -49,6 +51,7 @@ class NetworkScanner
     @ips_to_check
   end 
 
+  # goes over the entire ip array and check if host is alive.
   def pinger
     binding.pry
     @livehosts = []
@@ -62,6 +65,7 @@ class NetworkScanner
     puts @livehosts
   end
 
+  #check if the host is alive using console ping
   def alive?(host)
     puts "Checking host: #{host}"
     Timeout::timeout(@timeout) do

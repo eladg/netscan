@@ -4,7 +4,10 @@ require 'optparse'
 require "./BannerGrabber"
 require "./NetworkScanner"
 require "./PortScanner"
-  
+
+
+## This project was Written by Or Gariany
+
 options = {}
 OptionParser.new do |opts|
 

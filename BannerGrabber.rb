@@ -17,7 +17,8 @@ class BannerGrabber
     return result
   end
 
-
+  #creates a TCP socket over port 80 and submit a get request.
+  #it is looking for the string: "server:" and decides what is the operating system of that server.
   def analyze_web
     socket = Socket.new( AF_INET, SOCK_STREAM, 0 )
     sockaddr = Socket.pack_sockaddr_in(80,@host)
@@ -37,6 +38,9 @@ class BannerGrabber
     end
     return knownWebServer(webServer.downcase)
   end
+
+
+  #creates a TCP socket over port 21 and recives the server responce.
 
   def analyze_ftp
     begin
@@ -60,6 +64,7 @@ class BannerGrabber
     end
   end
 
+  #DB if web known web servers 
   def knownWebServer(webServer)
     case webServer
     when "iis 5.1"
