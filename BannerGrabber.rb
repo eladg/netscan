@@ -25,20 +25,22 @@ class BannerGrabber
     begin
       @socket.connect(sockaddr)  
     rescue Errno::ECONNREFUSED
-      puts "connection Refused"
+      @socket.close
+      puts "connection refused on port 80"
       return "unknown OS"
     end
-    
     @socket.write("get / http/1.1\r\n\r\n")
     begin
       Timeout::timeout(@timeout) do
         @result = @socket.read 
       end
     rescue Timeout::Error
+      @socket.close
       puts "no response from the server"
       return "unknown OS"
     end
       if @result == nil
+        @socket.close
         puts "no response from the server"
         return "unknown OS"      
       end 
@@ -63,6 +65,7 @@ class BannerGrabber
         @result = @socket.gets
       end
     rescue Timeout::Error
+      @socket.close
       return "unknown OS"
     end
 
@@ -70,7 +73,7 @@ class BannerGrabber
       @socket.close
       return "Linux"
     elsif @result.downcase.include?("filezila")
-      sock.close
+      @socket.close
       return "windows"
     else
       @socket.close
