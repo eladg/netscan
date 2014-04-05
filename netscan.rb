@@ -11,8 +11,12 @@ OptionParser.new do |opts|
     options[:ip] = ip
   end
 
-  opts.on('-p','--port',Integer,'Port scan on host') do |port|
+  opts.on('-p','--Port',String,'Start port scanning tool') do |port|
     options[:port] = true
+  end
+
+  opts.on('-t','--Type type',String,'connection type [udp/tcp]') do |type|
+    options[:type] = type
   end
 
   opts.on('-b','--bannerGrabber',String,'BannerGrabber status (works only for TCP)') do |bannerGrabber|
@@ -46,12 +50,12 @@ end
 
 if options[:network]
   networkMapper = NetworkScanner.new
-  networkMapper.getInterfaceIps(options[:network])
+  networkMapper.get_network_by_interface(options[:network])
   networkMapper.pinger
 end
 
 if options[:port]
-  one_of?(options, :ip)
+  #one_of?(options, :ip,:type)
   ps = PortScanner.new(options[:ip])
-  ps.scan_host
+  ps.scan_host(options[:type])
 end

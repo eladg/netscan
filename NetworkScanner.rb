@@ -17,7 +17,7 @@ class NetworkScanner
     @timeout = timeout
   end
 
-  def getInterfaceIps(interface)
+  def get_network_by_interface(interface)
 
     ifconfig = `ifconfig`.split("\n\n").index_by{|x| x[/\w+/,0]}
     inet = ifconfig[interface][/inet addr:([^\s]*)/, 1].split('.')
@@ -35,7 +35,7 @@ class NetworkScanner
     fourth_range = start_fourth..broadcast[3].to_i
      
     @ips_to_check = []
-
+    binding.pry
     first_range.each do |first|
       second_range.each do |second|
         third_range.each do |third|
@@ -46,13 +46,14 @@ class NetworkScanner
       end
     end
     puts "Checking ips in (#{first_range}).(#{second_range}).(#{third_range}).(#{fourth_range})"
-    return @ips_to_check
+    
+    @ips_to_check
   end 
 
   def pinger
     @livehosts = []
     @ips_to_check.each do |ip|
-      if(ip.split(".").last != "0")
+      if(ip.split(".").last != "0" || ip.split(".").last != "255")
         if alive?(ip)
           @livehosts << ip
         end
