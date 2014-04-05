@@ -1,35 +1,52 @@
-require 'pry'
 require 'socket'
+require 'timeout'
 include Socket::Constants
 
 class BannerGrabber
-  def analyze_web(host)
+  
+  def initialize(host,timeout = 2)
+    @host = TCPSocket.gethostbyname(host)[3]
+    @timeout = timeout
+  end
+  
+  def analyze_host
+    result = analyze_web
+    if result == "unknown OS"
+      result = analyze_ftp
+    end
+    return result
+  end
 
-    host_ip = TCPSocket.gethostbyname(host)
+
+  def analyze_web
     socket = Socket.new( AF_INET, SOCK_STREAM, 0 )
-    sockaddr = Socket.pack_sockaddr_in(80,host_ip[3])
+    sockaddr = Socket.pack_sockaddr_in(80,@host)
     socket.connect(sockaddr)
     socket.write("get / http/1.1\r\n\r\n")
     result = socket.read
-    
     if result == nil
       puts "no response from the server"
-      return "unknown"
+      return "unknown OS"
     end    
     webServer = result.split("Server: ").last.split("\r\n").first
 
     if !result.include?("Server:")
       puts "didnt find Server:"
       socket.close
-      return "unknown"
+      return "unknown OS"
     end
     return knownWebServer(webServer.downcase)
   end
 
-  def analyze_ftp(host)
-    host_ip = TCPSocket.gethostbyname(host)
-    socket = TCPSocket.open(host_ip[3],21)
-    result = socket.gets
+  def analyze_ftp
+    begin
+      Timeout::timeout(@timeout) do
+        socket = TCPSocket.open(@host,21)
+        result = socket.gets    
+      end
+    rescue Timeout::Error
+      return "unknown OS"
+    end
     
     if result.downcase.include?("ftpd") or result.include?("pure")
       socket.close
@@ -39,7 +56,7 @@ class BannerGrabber
       return "windows"
     else
       socket.close
-      return "unknown"
+      return "unknown OS"
     end
   end
 
@@ -58,7 +75,7 @@ class BannerGrabber
     when "gws"
       return "google web server"
     else
-      return "unknown"
+      return "unknown OS"
     end
   end
 end

@@ -35,7 +35,6 @@ class NetworkScanner
     fourth_range = start_fourth..broadcast[3].to_i
      
     @ips_to_check = []
-    binding.pry
     first_range.each do |first|
       second_range.each do |second|
         third_range.each do |third|
@@ -51,6 +50,7 @@ class NetworkScanner
   end 
 
   def pinger
+    binding.pry
     @livehosts = []
     @ips_to_check.each do |ip|
       if(ip.split(".").last != "0" || ip.split(".").last != "255")
@@ -59,10 +59,11 @@ class NetworkScanner
         end
       end
     end
+    puts @livehosts
   end
 
   def alive?(host)
-    bool = false
+    puts "Checking host: #{host}"
     Timeout::timeout(@timeout) do
       result = `ping -c 1 #{host}`
       if result.include?("time=")
@@ -70,7 +71,6 @@ class NetworkScanner
       end
     end
   rescue
-    puts "request timedout for #{host}"
     return false
   end
 end

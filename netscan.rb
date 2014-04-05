@@ -7,17 +7,6 @@ require "./PortScanner"
   
 options = {}
 OptionParser.new do |opts|
-  opts.on('-i', '--ip Host', String, 'target ip address') do |ip|
-    options[:ip] = ip
-  end
-
-  opts.on('-p','--Port',String,'Start port scanning tool') do |port|
-    options[:port] = true
-  end
-
-  opts.on('-t','--Type type',String,'connection type [udp/tcp]') do |type|
-    options[:type] = type
-  end
 
   opts.on('-b','--bannerGrabber',String,'BannerGrabber status (works only for TCP)') do |bannerGrabber|
     options[:bannerGrabber] = true
@@ -25,6 +14,18 @@ OptionParser.new do |opts|
 
   opts.on('-n','--networkMapper Interface',String,'Mapping the entire network using ICMP') do |interface|
     options[:network] = interface
+  end
+
+  opts.on('-p','--Port',String,'Start port scanning tool') do |port|
+    options[:port] = true
+  end
+
+  opts.on('-i', '--ip Host', String, 'target ip address') do |ip|
+    options[:ip] = ip
+  end
+
+  opts.on('-t','--Type type',String,'connection type [udp/tcp]') do |type|
+    options[:type] = type
   end
 
   opts.on_tail('-h', '--help', 'Show help message') do
@@ -40,12 +41,12 @@ def one_of?(options, *args)
   end
 end
 
-#one_of?(options, :ip)
+one_of?(options, :bannerGrabber,:network,:port)
 
 if options[:bannerGrabber]
-  bg = BannerGrabber.new  
-  host = options[:ip]
-  puts bg.analyze_web(host)
+  one_of?(options, :ip)
+  bg = BannerGrabber.new(options[:ip])
+  puts bg.analyze_host
 end
 
 if options[:network]
@@ -55,7 +56,8 @@ if options[:network]
 end
 
 if options[:port]
-  #one_of?(options, :ip,:type)
+  one_of?(options, :ip)
+  one_of?(options, :type)
   ps = PortScanner.new(options[:ip])
   ps.scan_host(options[:type])
 end

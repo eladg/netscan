@@ -1,6 +1,5 @@
 require 'socket'
 require 'timeout'
-require 'pry'
 
 class PortScanner
 
